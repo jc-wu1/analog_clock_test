@@ -287,38 +287,39 @@ class ClockPainter extends CustomPainter {
     Offset paddingX = Offset(28 * scaleFactor, 0.0);
     Offset paddingY = Offset(0.0, 28 * scaleFactor);
 
-    TextSpan span12 = TextSpan(style: style, text: "9");
-    TextPainter tp12 = TextPainter(
-      text: span12,
+    TextSpan span9 = TextSpan(style: style, text: "9");
+    TextPainter tp9 = TextPainter(
+      text: span9,
       textAlign: TextAlign.center,
       textDirection: TextDirection.ltr,
     );
-    tp12.layout();
-    tp12.paint(canvas, size.topCenter(-tp12.size.topCenter(-paddingY)));
+    tp9.layout();
+    tp9.paint(canvas, size.topCenter(-tp9.size.topCenter(-paddingY)));
 
-    TextSpan span6 = TextSpan(style: style, text: "3");
+    TextSpan span3 = TextSpan(style: style, text: "3");
+    TextPainter tp3 = TextPainter(
+      text: span3,
+      textAlign: TextAlign.center,
+      textDirection: TextDirection.ltr,
+    );
+    tp3.layout();
+    tp3.paint(canvas, size.bottomCenter(-tp3.size.bottomCenter(paddingY)));
+
+    TextSpan span12 = TextSpan(style: style, text: "12");
+    TextPainter tp12 = TextPainter(
+        text: span12,
+        textAlign: TextAlign.center,
+        textDirection: TextDirection.ltr);
+    tp12.layout();
+    tp12.paint(canvas, size.centerRight(-tp12.size.centerRight(paddingX)));
+
+    TextSpan span6 = TextSpan(style: style, text: "6");
     TextPainter tp6 = TextPainter(
         text: span6,
         textAlign: TextAlign.center,
         textDirection: TextDirection.ltr);
     tp6.layout();
-    tp6.paint(canvas, size.bottomCenter(-tp6.size.bottomCenter(paddingY)));
-
-    TextSpan span3 = TextSpan(style: style, text: "12");
-    TextPainter tp3 = TextPainter(
-        text: span3,
-        textAlign: TextAlign.center,
-        textDirection: TextDirection.ltr);
-    tp3.layout();
-    tp3.paint(canvas, size.centerRight(-tp3.size.centerRight(paddingX)));
-
-    TextSpan span9 = TextSpan(style: style, text: "6");
-    TextPainter tp9 = TextPainter(
-        text: span9,
-        textAlign: TextAlign.center,
-        textDirection: TextDirection.ltr);
-    tp9.layout();
-    tp9.paint(canvas, size.centerLeft(-tp9.size.centerLeft(-paddingX)));
+    tp6.paint(canvas, size.centerLeft(-tp6.size.centerLeft(-paddingX)));
   }
 
   @override
