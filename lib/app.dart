@@ -3,17 +3,27 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:math';
 
+import 'package:flutter_neumorphic/flutter_neumorphic.dart';
+
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const NeumorphicApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+      theme: NeumorphicThemeData(
+        defaultTextColor: Color(0xFF303E57),
+        accentColor: Color(0xFF7B79FC),
+        variantColor: Colors.black38,
+        baseColor: Color(0xFFF8F9FC),
+        depth: 8,
+        intensity: 0.5,
+        lightSource: LightSource.topLeft,
       ),
-      home: const MyHomePage(title: 'Analog Alarm'),
+      themeMode: ThemeMode.light,
+      debugShowCheckedModeBanner: false,
+      home: MyHomePage(title: 'Analog Alarm'),
     );
   }
 }
@@ -30,11 +40,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: const Body(),
+    return const Scaffold(
+      body: Body(),
     );
   }
 }
@@ -47,8 +54,7 @@ class Body extends StatefulWidget {
 }
 
 class _BodyState extends State<Body> {
-  final DateTime _dateTime = DateTime.now();
-  DateTime _session = DateTime.now();
+  DateTime _dateTime = DateTime.now();
 
   @override
   void initState() {
@@ -59,7 +65,7 @@ class _BodyState extends State<Body> {
   Widget build(BuildContext context) {
     void _update(DateTime time) {
       setState(() {
-        _session = time;
+        _dateTime = time;
       });
     }
 
@@ -71,14 +77,86 @@ class _BodyState extends State<Body> {
             const Spacer(),
             Clock(
               update: _update,
+              dateTime: DateTime.now(),
             ),
             const Spacer(),
-            CountryCard(
-              country: "Jakarta, Indonesia",
-              timeZone: "GMT +7",
-              time: _dateTime,
+            Text(
+              "${_dateTime.hour} : ${_dateTime.minute} : ${_dateTime.second}",
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 36,
+                color: NeumorphicTheme.defaultTextColor(context),
+              ),
             ),
-            Text("${_session.hour} : ${_session.minute}"),
+            Text(
+              "Jakarta, Indonesia",
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: 16,
+                color: NeumorphicTheme.variantColor(context),
+              ),
+            ),
+            const Spacer(),
+            SizedBox(
+              width: 300,
+              child: Row(
+                children: [
+                  NeumorphicButton(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 18,
+                      horizontal: 24,
+                    ),
+                    style: NeumorphicStyle(
+                      intensity: 0.86,
+                      depth: 5,
+                      shape: NeumorphicShape.flat,
+                      boxShape: NeumorphicBoxShape.roundRect(
+                        BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Center(
+                      child: Text(
+                        "+ Add Alarm",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 14,
+                          color: NeumorphicTheme.defaultTextColor(context),
+                        ),
+                      ),
+                    ),
+                    onPressed: () {},
+                  ),
+                  const Spacer(),
+                  NeumorphicButton(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 18,
+                      horizontal: 24,
+                    ),
+                    style: NeumorphicStyle(
+                      intensity: 0.86,
+                      depth: 5,
+                      shape: NeumorphicShape.flat,
+                      boxShape: NeumorphicBoxShape.roundRect(
+                        BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Center(
+                      child: Text(
+                        "Active Alarm",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 14,
+                          color: NeumorphicTheme.defaultTextColor(context),
+                        ),
+                      ),
+                    ),
+                    onPressed: () {},
+                  ),
+                ],
+              ),
+            ),
             const Spacer(),
           ],
         ),
@@ -88,66 +166,76 @@ class _BodyState extends State<Body> {
 }
 
 class Clock extends StatefulWidget {
-  const Clock({Key? key, required this.update}) : super(key: key);
+  const Clock({
+    Key? key,
+    required this.update,
+    required this.dateTime,
+  }) : super(key: key);
   final ValueChanged<DateTime> update;
+  final DateTime dateTime;
 
   @override
-  _ClockState createState() => _ClockState();
+  _ClockState createState() => _ClockState(dateTime);
 }
 
 class _ClockState extends State<Clock> {
-  DateTime _dateTime = DateTime.now();
-  DateTime _newTime = DateTime.now();
-  late Timer timer;
+  DateTime _dateTime;
+  final DateTime _initialDateTime;
+  late Timer _timer;
+  Duration duration = const Duration(seconds: 1);
+
+  _ClockState(_dateTime)
+      : _dateTime = _dateTime ?? DateTime.now(),
+        _initialDateTime = _dateTime ?? DateTime.now();
 
   @override
   void initState() {
     super.initState();
-    _startTimer();
+    _timer = Timer.periodic(duration, update);
+  }
+
+  update(Timer timer) {
+    if (mounted) {
+      _dateTime = _initialDateTime.add(duration * timer.tick);
+      setState(() {});
+      widget.update(_dateTime);
+    }
   }
 
   void _startTimer() {
-    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {
-        _dateTime = DateTime.now();
-      });
-    });
+    _timer = Timer.periodic(duration, update);
   }
 
   void _stopTimer() {
-    timer.cancel();
+    _timer.cancel();
   }
 
   void _increaseMinute() {
     setState(() {
       _dateTime = _dateTime.add(const Duration(minutes: 1));
-      _newTime = _newTime.add(const Duration(minutes: 1));
-      widget.update(_newTime);
     });
+    widget.update(_dateTime);
   }
 
   void _decreaseMinute() {
     setState(() {
       _dateTime = _dateTime.subtract(const Duration(minutes: 1));
-      _newTime = _newTime.subtract(const Duration(minutes: 1));
-      widget.update(_newTime);
     });
+    widget.update(_dateTime);
   }
 
   void _increaseHour() {
     setState(() {
       _dateTime = _dateTime.add(const Duration(hours: 1));
-      _newTime = _newTime.add(const Duration(hours: 1));
-      widget.update(_newTime);
     });
+    widget.update(_dateTime);
   }
 
   void _decreaseHour() {
     setState(() {
       _dateTime = _dateTime.subtract(const Duration(hours: 1));
-      _newTime = _newTime.subtract(const Duration(hours: 1));
-      widget.update(_newTime);
     });
+    widget.update(_dateTime);
   }
 
   @override
@@ -162,20 +250,22 @@ class _ClockState extends State<Clock> {
       onHorizontalDragUpdate: (details) {
         int sensitivity = 1;
         if (details.delta.dx > sensitivity) {
+          //swipe right
           _increaseMinute();
         }
         if (details.delta.dx < -sensitivity) {
+          //swipe left
           _decreaseMinute();
         }
       },
       onVerticalDragUpdate: (details) {
         int sensitivity = 1;
         if (details.delta.dy > sensitivity) {
-          // Down Swipe
+          // swipe down
           _decreaseHour();
         }
         if (details.delta.dy < -sensitivity) {
-          // Up Swipe
+          // swipe up
           _increaseHour();
         }
       },
@@ -185,22 +275,42 @@ class _ClockState extends State<Clock> {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: AspectRatio(
               aspectRatio: 1,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surface,
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      offset: const Offset(0, 0),
-                      color: Colors.black.withOpacity(0.14),
-                      blurRadius: 64,
-                    ),
-                  ],
+              child: Neumorphic(
+                margin: const EdgeInsets.all(14),
+                style: const NeumorphicStyle(
+                  boxShape: NeumorphicBoxShape.circle(),
                 ),
-                child: Transform.rotate(
-                  angle: -pi / 2,
-                  child: CustomPaint(
-                    painter: ClockPainter(context, _dateTime),
+                child: Neumorphic(
+                  style: const NeumorphicStyle(
+                    depth: 14,
+                    boxShape: NeumorphicBoxShape.circle(),
+                  ),
+                  margin: const EdgeInsets.all(20),
+                  child: Neumorphic(
+                    style: const NeumorphicStyle(
+                      depth: -8,
+                      boxShape: NeumorphicBoxShape.circle(),
+                    ),
+                    margin: const EdgeInsets.all(10),
+                    child: Stack(
+                      fit: StackFit.expand,
+                      alignment: Alignment.center,
+                      children: [
+                        Neumorphic(
+                          style: const NeumorphicStyle(
+                            depth: -2,
+                            boxShape: NeumorphicBoxShape.circle(),
+                          ),
+                          margin: const EdgeInsets.all(65),
+                        ),
+                        Transform.rotate(
+                          angle: -pi / 2,
+                          child: CustomPaint(
+                            painter: ClockPainter(context, _dateTime),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -216,16 +326,9 @@ class ClockPainter extends CustomPainter {
   final BuildContext context;
   final DateTime dateTime;
 
-  // void _drawIndicators(Canvas canvas, Size size, double scaleFactor) {
-
-  // }
-
   ClockPainter(this.context, this.dateTime);
   @override
   void paint(Canvas canvas, Size size) {
-    // _drawIndicators(canvas, size, 1000);
-    double scaleFactor = size.shortestSide / 320.0;
-
     double centerX = size.width / 2;
     double centerY = size.height / 2;
     Offset center = Offset(centerX, centerY);
@@ -239,7 +342,7 @@ class ClockPainter extends CustomPainter {
       center,
       Offset(minX, minY),
       Paint()
-        ..color = Theme.of(context).colorScheme.secondary
+        ..color = Colors.grey.shade300
         ..style = PaintingStyle.stroke
         ..strokeWidth = 10,
     );
@@ -257,7 +360,7 @@ class ClockPainter extends CustomPainter {
       center,
       Offset(hourX, hourY),
       Paint()
-        ..color = Theme.of(context).colorScheme.secondary
+        ..color = Colors.grey[350] as Color
         ..style = PaintingStyle.stroke
         ..strokeWidth = 10,
     );
@@ -267,121 +370,18 @@ class ClockPainter extends CustomPainter {
     double secondY =
         centerY + size.width * 0.4 * sin((dateTime.second * 6) * pi / 180);
 
-    canvas.drawLine(center, Offset(secondX, secondY),
-        Paint()..color = Theme.of(context).primaryColor);
-
-    Paint dotPainter = Paint()..color = Colors.blue;
-    canvas.drawCircle(center, 24, dotPainter);
-    canvas.drawCircle(
-        center, 23, Paint()..color = Theme.of(context).backgroundColor);
-    canvas.drawCircle(center, 10, dotPainter);
-
-//text
-    TextStyle style = const TextStyle(
-      color: Colors.black,
-      fontWeight: FontWeight.bold,
-      fontSize: 20,
+    canvas.drawLine(
+      center,
+      Offset(secondX, secondY),
+      Paint()..color = Colors.grey,
     );
-    // double p = 4.0;
-    // p += 24.0;
-    Offset paddingX = Offset(28 * scaleFactor, 0.0);
-    Offset paddingY = Offset(0.0, 28 * scaleFactor);
 
-    TextSpan span9 = TextSpan(style: style, text: "9");
-    TextPainter tp9 = TextPainter(
-      text: span9,
-      textAlign: TextAlign.center,
-      textDirection: TextDirection.ltr,
-    );
-    tp9.layout();
-    tp9.paint(canvas, size.topCenter(-tp9.size.topCenter(-paddingY)));
-
-    TextSpan span3 = TextSpan(style: style, text: "3");
-    TextPainter tp3 = TextPainter(
-      text: span3,
-      textAlign: TextAlign.center,
-      textDirection: TextDirection.ltr,
-    );
-    tp3.layout();
-    tp3.paint(canvas, size.bottomCenter(-tp3.size.bottomCenter(paddingY)));
-
-    TextSpan span12 = TextSpan(style: style, text: "12");
-    TextPainter tp12 = TextPainter(
-        text: span12,
-        textAlign: TextAlign.center,
-        textDirection: TextDirection.ltr);
-    tp12.layout();
-    tp12.paint(canvas, size.centerRight(-tp12.size.centerRight(paddingX)));
-
-    TextSpan span6 = TextSpan(style: style, text: "6");
-    TextPainter tp6 = TextPainter(
-        text: span6,
-        textAlign: TextAlign.center,
-        textDirection: TextDirection.ltr);
-    tp6.layout();
-    tp6.paint(canvas, size.centerLeft(-tp6.size.centerLeft(-paddingX)));
+    Paint dotPainter = Paint()..color = Colors.grey[350] as Color;
+    canvas.drawCircle(center, 5, dotPainter);
   }
 
   @override
   bool shouldRepaint(CustomPainter oldDelegate) {
     return true;
-  }
-}
-
-class CountryCard extends StatelessWidget {
-  const CountryCard({
-    Key? key,
-    required this.country,
-    required this.timeZone,
-    required this.time,
-  }) : super(key: key);
-
-  final String country, timeZone;
-  final DateTime time;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 20),
-      child: SizedBox(
-        width: 233,
-        child: AspectRatio(
-          aspectRatio: 1.32,
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                color: Colors.grey,
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  country,
-                  style: Theme.of(context)
-                      .textTheme
-                      .headline4!
-                      .copyWith(fontSize: 16),
-                ),
-                const SizedBox(height: 5),
-                Text(timeZone),
-                const Spacer(),
-                Row(
-                  children: [
-                    const Spacer(),
-                    Text(
-                      "${time.hour} : ${time.minute}",
-                      style: Theme.of(context).textTheme.headline4,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
   }
 }
