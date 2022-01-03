@@ -1,9 +1,8 @@
-import 'package:flutter/material.dart';
-
 import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
+import 'package:intl/intl.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -69,6 +68,9 @@ class _BodyState extends State<Body> {
       });
     }
 
+    final String formattedTime =
+        DateFormat('kk:mm:ss').format(_dateTime).toString();
+
     return SafeArea(
       child: SizedBox(
         width: double.infinity,
@@ -81,7 +83,7 @@ class _BodyState extends State<Body> {
             ),
             const Spacer(),
             Text(
-              "${_dateTime.hour} : ${_dateTime.minute} : ${_dateTime.second}",
+              formattedTime,
               style: TextStyle(
                 fontWeight: FontWeight.w700,
                 fontSize: 36,
