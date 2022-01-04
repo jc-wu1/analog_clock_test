@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ffi';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -114,7 +113,7 @@ class BarChartSample1State extends State<BarChartSample1> {
         (i) {
           return makeGroupData(
             i,
-            widget.document[i].get('timeDiff'),
+            widget.document[i].get('timeDiff') + .0,
             isTouched: i == touchedIndex,
           );
         },

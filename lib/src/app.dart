@@ -23,13 +23,13 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        // '/ring': (context) => const AlarmRingPage(),
+        '/ring': (context) => const AlarmRingPage(),
         '/alarmlist': (context) => const AlarmListPage(),
       },
       navigatorKey: navigatorKey,
       themeMode: ThemeMode.light,
       debugShowCheckedModeBanner: false,
-      home: const AlarmRingPage(),
+      home: const MyHomePage(title: 'Alarm'),
     );
   }
 }

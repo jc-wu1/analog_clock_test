@@ -32,13 +32,14 @@ class _AlarmRingPageState extends State<AlarmRingPage> {
       });
       Storage.updateAlarm(document.id, {'timeDiff': _timeDifference});
     });
-    // startAudioAndVibrate();
+    startAudioAndVibrate();
   }
 
   void startAudioAndVibrate() async {
     await Vibration.vibrate(duration: 10000);
-    await player.load('sound1.wav');
-    advancedPlayer = await player.loop('sound1.wav');
+    // https://samplefocus.com/collections/smooth-mixed-melodies
+    await player.load('notification_sound.wav');
+    advancedPlayer = await player.loop('notification_sound.wav');
   }
 
   void stopAudioAndVibration() async {

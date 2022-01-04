@@ -57,10 +57,12 @@ Future singleNotification(
   String docId, {
   String? sound,
 }) async {
-  var androidChannel = const AndroidNotificationDetails(
+  const sound = 'notification_sound.wav';
+  var androidChannel = AndroidNotificationDetails(
     'channel-id',
     'Alarm Clock',
     channelDescription: 'To send an alarm notification',
+    sound: RawResourceAndroidNotificationSound(sound.split('.').first),
     importance: Importance.max,
     priority: Priority.high,
     ticker: 'ticker',
