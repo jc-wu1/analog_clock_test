@@ -1,3 +1,6 @@
+import 'package:analog_clock_test/src/pages/chart.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../utils/firestore.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
@@ -17,17 +20,19 @@ class _AlarmRingPageState extends State<AlarmRingPage> {
   final player = AudioCache();
   AudioPlayer? advancedPlayer;
   String? _title, _timeString;
+  int? _timeDifference;
 
   void initializeDetails() async {
     await Storage.getAlarmDetails(widget.payload!).then((document) {
+      DateTime fromFirebase = document.get('time').toDate();
       setState(() {
         _title = document.get('title');
-        _timeString = DateFormat('kk:mm:ss')
-            .format(document.get('time').toDate())
-            .toString();
+        _timeString = DateFormat('kk:mm:ss').format(fromFirebase).toString();
+        _timeDifference = DateTime.now().difference(fromFirebase).inSeconds;
       });
+      Storage.updateAlarm(document.id, {'timeDiff': _timeDifference});
     });
-    startAudioAndVibrate();
+    // startAudioAndVibrate();
   }
 
   void startAudioAndVibrate() async {
@@ -51,7 +56,6 @@ class _AlarmRingPageState extends State<AlarmRingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xffddd3ee),
       body: SafeArea(
         child: Center(
           child: Padding(
@@ -59,17 +63,26 @@ class _AlarmRingPageState extends State<AlarmRingPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  " $_timeString ",
-                  style: const TextStyle(
-                    fontSize: 30,
-                  ),
-                ),
-                Text(
-                  " $_title ",
-                  style: const TextStyle(
-                    fontSize: 16,
-                  ),
+                StreamBuilder(
+                  stream: Storage.getStream(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const CircularProgressIndicator();
+                    } else if (snapshot.hasData) {
+                      return snapshot.data!.docs.isEmpty
+                          ? const Center(
+                              child: Text('No Data'),
+                            )
+                          : BarChartSample1(
+                              document: snapshot.data!.docs,
+                            );
+                    } else if (snapshot.hasError) {
+                      return const Text('Error');
+                    } else {
+                      return const CircularProgressIndicator();
+                    }
+                  },
                 ),
                 const SizedBox(
                   height: 70,
@@ -86,7 +99,7 @@ class _AlarmRingPageState extends State<AlarmRingPage> {
                     stopAudioAndVibration();
                   },
                   child: const Text(
-                    'Submit',
+                    'Close',
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w500,

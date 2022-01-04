@@ -25,6 +25,7 @@ dependencies:
   vibration: ^1.7.4-nullsafety.0
   fluttertoast: ^8.0.8
   adaptive_dialog: ^1.2.0
+  fl_chart: ^0.40.6
 
 # https://iconarchive.com/show/flatwoken-icons-by-alecive/Apps-Alarm-icon.html
 dev_dependencies:
