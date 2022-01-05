@@ -108,7 +108,7 @@ class ReportWidgetState extends State<ReportWidget> {
               : const BorderSide(color: Colors.white, width: 0),
           backDrawRodData: BackgroundBarChartRodData(
             show: true,
-            y: 20,
+            y: 50,
             colors: [barBackgroundColor],
           ),
         ),

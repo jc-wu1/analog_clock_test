@@ -1,9 +1,9 @@
 import 'package:analog_clock_test/src/pages/chart.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 
 import '../utils/firestore.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:vibration/vibration.dart';
 
@@ -90,24 +90,34 @@ class _AlarmRingPageState extends State<AlarmRingPage> {
                 const SizedBox(
                   height: 70,
                 ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    primary: const Color.fromRGBO(92, 184, 92, 5),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15.0),
+                NeumorphicButton(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 18,
+                    horizontal: 24,
+                  ),
+                  style: NeumorphicStyle(
+                    intensity: 0.86,
+                    depth: 5,
+                    shape: NeumorphicShape.flat,
+                    boxShape: NeumorphicBoxShape.roundRect(
+                      BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      "Close",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14,
+                        color: NeumorphicTheme.defaultTextColor(context),
+                      ),
                     ),
                   ),
                   onPressed: () {
                     Navigator.pop(context);
                     stopAudioAndVibration();
                   },
-                  child: const Text(
-                    'Close',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
                 ),
               ],
             ),
