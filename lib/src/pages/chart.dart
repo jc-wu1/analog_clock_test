@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 
-class BarChartSample1 extends StatefulWidget {
+class ReportWidget extends StatefulWidget {
   final List<DocumentSnapshot> document;
   final List<Color> availableColors = const [
     Colors.purpleAccent,
@@ -15,13 +15,13 @@ class BarChartSample1 extends StatefulWidget {
     Colors.redAccent,
   ];
 
-  const BarChartSample1({Key? key, required this.document}) : super(key: key);
+  const ReportWidget({Key? key, required this.document}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => BarChartSample1State();
+  State<StatefulWidget> createState() => ReportWidgetState();
 }
 
-class BarChartSample1State extends State<BarChartSample1> {
+class ReportWidgetState extends State<ReportWidget> {
   final Color barBackgroundColor = const Color(0xff72d8bf);
   final Duration animDuration = const Duration(milliseconds: 250);
 
@@ -48,9 +48,18 @@ class BarChartSample1State extends State<BarChartSample1> {
                   const Text(
                     'Report',
                     style: TextStyle(
-                        color: Color(0xff0f4a3c),
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold),
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Text(
+                    'Time difference between alarm time and notification click',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(
                     height: 4,
@@ -142,67 +151,41 @@ class BarChartSample1State extends State<BarChartSample1> {
 
   BarChartData mainBarData() {
     return BarChartData(
-      // barTouchData: BarTouchData(
-      //   touchTooltipData: BarTouchTooltipData(
-      //       tooltipBgColor: Colors.blueGrey,
-      //       getTooltipItem: (group, groupIndex, rod, rodIndex) {
-      //         String weekDay;
-      //         switch (group.x.toInt()) {
-      //           case 0:
-      //             weekDay = 'Monday';
-      //             break;
-      //           case 1:
-      //             weekDay = 'Tuesday';
-      //             break;
-      //           case 2:
-      //             weekDay = 'Wednesday';
-      //             break;
-      //           case 3:
-      //             weekDay = 'Thursday';
-      //             break;
-      //           case 4:
-      //             weekDay = 'Friday';
-      //             break;
-      //           case 5:
-      //             weekDay = 'Saturday';
-      //             break;
-      //           case 6:
-      //             weekDay = 'Sunday';
-      //             break;
-      //           default:
-      //             throw Error();
-      //         }
-      //         return BarTooltipItem(
-      //           weekDay + '\n',
-      //           const TextStyle(
-      //             color: Colors.white,
-      //             fontWeight: FontWeight.bold,
-      //             fontSize: 18,
-      //           ),
-      //           children: <TextSpan>[
-      //             TextSpan(
-      //               text: (rod.y - 1).toString(),
-      //               style: const TextStyle(
-      //                 color: Colors.yellow,
-      //                 fontSize: 16,
-      //                 fontWeight: FontWeight.w500,
-      //               ),
-      //             ),
-      //           ],
-      //         );
-      //       }),
-      //   touchCallback: (FlTouchEvent event, barTouchResponse) {
-      //     setState(() {
-      //       if (!event.isInterestedForInteractions ||
-      //           barTouchResponse == null ||
-      //           barTouchResponse.spot == null) {
-      //         touchedIndex = -1;
-      //         return;
-      //       }
-      //       touchedIndex = barTouchResponse.spot!.touchedBarGroupIndex;
-      //     });
-      //   },
-      // ),
+      barTouchData: BarTouchData(
+        touchTooltipData: BarTouchTooltipData(
+            tooltipBgColor: Colors.blueGrey,
+            getTooltipItem: (group, groupIndex, rod, rodIndex) {
+              return BarTooltipItem(
+                "Time difference (in second)\n",
+                const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+                children: <TextSpan>[
+                  TextSpan(
+                    text: (rod.y - 1).toString(),
+                    style: const TextStyle(
+                      color: Colors.yellow,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              );
+            }),
+        touchCallback: (FlTouchEvent event, barTouchResponse) {
+          setState(() {
+            if (!event.isInterestedForInteractions ||
+                barTouchResponse == null ||
+                barTouchResponse.spot == null) {
+              touchedIndex = -1;
+              return;
+            }
+            touchedIndex = barTouchResponse.spot!.touchedBarGroupIndex;
+          });
+        },
+      ),
       titlesData: FlTitlesData(
         show: true,
         rightTitles: SideTitles(showTitles: false),

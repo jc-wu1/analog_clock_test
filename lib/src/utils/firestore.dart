@@ -6,7 +6,10 @@ class Storage {
   static const collection = 'alarm';
 
   static Stream<QuerySnapshot> getStream() {
-    return firestore.collection(collection).snapshots();
+    return firestore
+        .collection(collection)
+        .orderBy('time', descending: true)
+        .snapshots();
   }
 
   static void deleteAlarm(String id) {

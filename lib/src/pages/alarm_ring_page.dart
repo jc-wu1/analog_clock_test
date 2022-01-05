@@ -66,8 +66,10 @@ class _AlarmRingPageState extends State<AlarmRingPage> {
               children: [
                 StreamBuilder(
                   stream: Storage.getStream(),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                  builder: (
+                    BuildContext context,
+                    AsyncSnapshot<QuerySnapshot> snapshot,
+                  ) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const CircularProgressIndicator();
                     } else if (snapshot.hasData) {
@@ -75,7 +77,7 @@ class _AlarmRingPageState extends State<AlarmRingPage> {
                           ? const Center(
                               child: Text('No Data'),
                             )
-                          : BarChartSample1(
+                          : ReportWidget(
                               document: snapshot.data!.docs,
                             );
                     } else if (snapshot.hasError) {
