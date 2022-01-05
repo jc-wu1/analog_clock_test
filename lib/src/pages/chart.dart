@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:intl/intl.dart';
 
 class ReportWidget extends StatefulWidget {
@@ -23,6 +24,8 @@ class ReportWidget extends StatefulWidget {
 
 class ReportWidgetState extends State<ReportWidget> {
   final Color barBackgroundColor = const Color(0xff72d8bf);
+  final Color barBackgroundColor2 = const Color(0xffc2cbd9);
+  final Color fillColor = const Color(0xffe0e5ec);
   final Duration animDuration = const Duration(milliseconds: 250);
 
   int touchedIndex = -1;
@@ -33,9 +36,16 @@ class ReportWidgetState extends State<ReportWidget> {
   Widget build(BuildContext context) {
     return AspectRatio(
       aspectRatio: 1,
-      child: Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        color: Colors.blueAccent,
+      child: Neumorphic(
+        // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        style: NeumorphicStyle(
+          intensity: 0.86,
+          depth: 5,
+          shape: NeumorphicShape.flat,
+          boxShape: NeumorphicBoxShape.roundRect(
+            BorderRadius.circular(18),
+          ),
+        ),
         child: Stack(
           children: <Widget>[
             Padding(
@@ -45,20 +55,19 @@ class ReportWidgetState extends State<ReportWidget> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 mainAxisSize: MainAxisSize.max,
                 children: <Widget>[
-                  const Text(
+                  Text(
                     'Report',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: NeumorphicTheme.defaultTextColor(context),
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const Text(
+                  Text(
                     'Time difference between alarm time and notification click',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: NeumorphicTheme.defaultTextColor(context),
                       fontSize: 14,
-                      fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(
@@ -101,15 +110,15 @@ class ReportWidgetState extends State<ReportWidget> {
       barRods: [
         BarChartRodData(
           y: isTouched ? y + 1 : y,
-          colors: isTouched ? [Colors.yellow] : [barColor],
+          colors: isTouched ? [Colors.yellow] : [fillColor],
           width: width,
           borderSide: isTouched
               ? const BorderSide(color: Colors.yellowAccent, width: 1)
-              : const BorderSide(color: Colors.white, width: 0),
+              : BorderSide(color: fillColor, width: 0),
           backDrawRodData: BackgroundBarChartRodData(
             show: true,
             y: 50,
-            colors: [barBackgroundColor],
+            colors: [barBackgroundColor2],
           ),
         ),
       ],
@@ -192,8 +201,8 @@ class ReportWidgetState extends State<ReportWidget> {
         topTitles: SideTitles(showTitles: false),
         bottomTitles: SideTitles(
           showTitles: true,
-          getTextStyles: (context, value) => const TextStyle(
-            color: Colors.white,
+          getTextStyles: (context, value) => TextStyle(
+            color: NeumorphicTheme.defaultTextColor(context),
             fontWeight: FontWeight.bold,
             fontSize: 14,
           ),
