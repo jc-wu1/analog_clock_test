@@ -165,7 +165,7 @@ class _ClockState extends State<Clock> {
 
 class ClockPainter extends CustomPainter {
   final BuildContext context;
-  final DateTime dateTime;
+  final tz.TZDateTime dateTime;
 
   ClockPainter(this.context, this.dateTime);
   @override
